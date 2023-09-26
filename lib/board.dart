@@ -18,6 +18,7 @@ class GameBoard extends StatefulWidget {
 
 class _GameBoardState extends State<GameBoard> {
   Piece currentPiece = Piece(type: Tetromino.L);
+  int score = 0;
 
   @override
   void initState() {
@@ -30,6 +31,29 @@ class _GameBoardState extends State<GameBoard> {
 
     Duration frameRate = const Duration(milliseconds: 400);
     gameLoop(frameRate);
+  }
+
+  void gameOver() {
+    // You can add game over logic here, such as displaying a dialog or navigating to a game over screen.
+    // For example, you can show an AlertDialog with the player's score and an option to restart the game.
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text('Game Over'),
+          content: Text('Score: $score'),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(); // Close the dialog
+                // resetGame(); // You can implement this function to reset the game.
+              },
+              child: const Text('Restart'),
+            ),
+          ],
+        );
+      },
+    );
   }
 
   gameLoop(Duration frameRate) {
@@ -72,7 +96,42 @@ class _GameBoardState extends State<GameBoard> {
           gameBoard[row][column] = currentPiece.type;
         }
       }
+
+      // Check for completed lines and clear them
+      int clearedLines = 0;
+      for (int row = columnLength - 1; row >= 0; row--) {
+        bool isCompleted = true;
+        for (int column = 0; column < rowLength; column++) {
+          if (gameBoard[row][column] == null) {
+            isCompleted = false;
+            break;
+          }
+        }
+
+        if (isCompleted) {
+          // Clear the completed line and move all lines above it down
+          for (int r = row; r > 0; r--) {
+            for (int c = 0; c < rowLength; c++) {
+              gameBoard[r][c] = gameBoard[r - 1][c];
+            }
+          }
+          clearedLines++;
+        }
+      }
+
+      // Update the score based on cleared lines
+      if (clearedLines > 0) {
+        score +=
+            clearedLines * 100; // You can adjust the scoring system as needed
+      }
+
+      // Create a new piece
       createNewPiece();
+
+      // Check for game over
+      if (checkCollision(Direction.down)) {
+        gameOver();
+      }
     }
   }
 
