@@ -34,8 +34,6 @@ class _GameBoardState extends State<GameBoard> {
   }
 
   void gameOver() {
-    // You can add game over logic here, such as displaying a dialog or navigating to a game over screen.
-    // For example, you can show an AlertDialog with the player's score and an option to restart the game.
     showDialog(
       context: context,
       builder: (context) {
@@ -45,7 +43,7 @@ class _GameBoardState extends State<GameBoard> {
           actions: [
             TextButton(
               onPressed: () {
-                Navigator.of(context).pop(); // Close the dialog
+                Navigator.of(context).pop();
                 // resetGame(); // You can implement this function to reset the game.
               },
               child: const Text('Restart'),
